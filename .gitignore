@@ -1,0 +1,4 @@
+d17map/migrations/*
+d17map/__pycache__/*
+*.pyc
+db.sqlite3
