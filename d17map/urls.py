@@ -6,6 +6,7 @@ from d17map.views.ReservationViews import (
     DayReservationList,
     ReservationDetail,
     ReservationListCreate,
+    reservation_types_view,
 )
 from d17map.views.UserViews import (
     LoginView,
@@ -27,6 +28,7 @@ urlpatterns = [
     path(
         "reservations/<int:pk>/", ReservationDetail.as_view(), name="reservation-detail"
     ),
+    path("reservations-types/", reservation_types_view, name="reservation-types"),
     path("equipments/", EquipmentListCreate.as_view(), name="equipment-list-create"),
     path(
         "equipments/batch/",

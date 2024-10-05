@@ -4,11 +4,11 @@ from enum import Enum
 
 
 class UserType(Enum):
-    ADMIN = 1
-    STUDENT = 2
-    TEACHER = 3
-    STUDENT_COUNCIL_PRESIDENT = 4
-    STUDENTS_CLUB_MEMBER = 5
+    ADMIN = "ADMIN"
+    STUDENT = "STUDENT"
+    TEACHER = "TEACHER"
+    STUDENT_COUNCIL_PRESIDENT = "STUDENT_COUNCIL_PRESIDENT"
+    STUDENTS_CLUB_MEMBER = "STUDENTS_CLUB_MEMBER"
 
 
 class CustomUser(AbstractUser):
@@ -18,14 +18,14 @@ class CustomUser(AbstractUser):
 
 
 class ReservationType(Enum):
-    CLASS = "class"
-    EXAM = "exam"
-    TEST = "test"
-    LECTURE = "lecture"
-    CONSULTATIONS = "consultations"
-    CONFERENCE = "conference"
-    STUDENTS_CLUB_MEETING = "students_club_meeting"
-    EVENT = "event"
+    CLASS = "Ćwiczenia"
+    EXAM = "Egzamin"
+    TEST = "Kolokwium"
+    LECTURE = "Wykład"
+    CONSULTATIONS = "Konsultacje"
+    CONFERENCE = "Konferencja"
+    STUDENTS_CLUB_MEETING = "Spotkanie koła naukowego"
+    EVENT = "Wydarzenie"
 
 
 class Equipment(models.Model):
@@ -39,7 +39,7 @@ class ClassRoom(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
     capacity = models.IntegerField()
-    equipments = models.ManyToManyField(Equipment)
+    equipment = models.ManyToManyField(Equipment)
 
     def __str__(self):
         return self.name
@@ -57,3 +57,6 @@ class Reservation(models.Model):
         default=ReservationType.CLASS.value,
         max_length=50,
     )
+
+    def __str__(self):
+        return self.title

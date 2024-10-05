@@ -1,9 +1,13 @@
+from django.http import JsonResponse
 from django.utils.dateparse import parse_date
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from d17map.models import Reservation
-from d17map.serializers import DayReservationSerializer, ReservationSerializer
+from d17map.models import Reservation, ReservationType
+from d17map.serializers import (
+    DayReservationSerializer,
+    ReservationSerializer,
+)
 
 
 class ReservationListCreate(generics.ListCreateAPIView):
@@ -37,3 +41,14 @@ class DayReservationList(generics.ListAPIView):
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+def reservation_types_view(request):
+    types = [reservation_type.value for reservation_type in ReservationType]
+    return JsonResponse({"types": types})
