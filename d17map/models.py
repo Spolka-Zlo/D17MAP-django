@@ -12,8 +12,9 @@ class UserType(Enum):
 
 
 class CustomUser(AbstractUser):
-    type = models.IntegerField(
-        choices=[(tag, tag.value) for tag in UserType], default=UserType.STUDENT.value
+    type = models.CharField(
+        choices=[(tag.name, tag.value) for tag in UserType],
+        default=UserType.STUDENT.value,
     )
 
 

@@ -1,12 +1,19 @@
 from django.http import JsonResponse
 from django.utils.dateparse import parse_date
 from rest_framework import generics
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
-from d17map.models import Reservation, ReservationType
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from d17map.models import Reservation, ReservationType, UserType
 from d17map.serializers import (
     DayReservationSerializer,
     ReservationSerializer,
+)
+from rest_framework.decorators import (
+    authentication_classes,
+    permission_classes,
 )
 
 
@@ -49,6 +56,55 @@ class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
         return super().get(request, *args, **kwargs)
 
 
+permissions = {
+    UserType.ADMIN.name: [
+        ReservationType.CLASS,
+        ReservationType.EXAM,
+        ReservationType.TEST,
+        ReservationType.LECTURE,
+        ReservationType.CONSULTATIONS,
+        ReservationType.CONFERENCE,
+        ReservationType.STUDENTS_CLUB_MEETING,
+        ReservationType.EVENT,
+    ],
+    UserType.STUDENT.name: [],
+    UserType.TEACHER.name: [
+        ReservationType.CLASS,
+        ReservationType.EXAM,
+        ReservationType.TEST,
+        ReservationType.LECTURE,
+        ReservationType.CONSULTATIONS,
+        ReservationType.CONFERENCE,
+        ReservationType.STUDENTS_CLUB_MEETING,
+        ReservationType.EVENT,
+    ],
+    UserType.STUDENT_COUNCIL_PRESIDENT.name: [
+        ReservationType.CLASS,
+        ReservationType.EXAM,
+        ReservationType.TEST,
+        ReservationType.LECTURE,
+        ReservationType.CONSULTATIONS,
+        ReservationType.CONFERENCE,
+        ReservationType.STUDENTS_CLUB_MEETING,
+        ReservationType.EVENT,
+    ],
+    UserType.STUDENTS_CLUB_MEMBER.name: [
+        ReservationType.CONFERENCE,
+        ReservationType.STUDENTS_CLUB_MEETING,
+        ReservationType.EVENT,
+    ],
+}
+
+
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def reservation_types_view(request):
-    types = [reservation_type.value for reservation_type in ReservationType]
+    token = request.headers.get("Authorization")
+    if not token:
+        return JsonResponse({"error": "Missing token"}, status=400)
+    token = token.split(" ")[1]
+    user_type = Token.objects.get(key=token).user.type
+    types = [tag.value for tag in permissions[user_type]]
+    print(f"user_type: {user_type}")
+    print(f"types: {types}")
     return JsonResponse({"types": types})
